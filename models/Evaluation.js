@@ -1,9 +1,9 @@
 const Sequelize = require('sequelize');
-const db = require('../config/db');
+const DB = require('../config/db');
 const Category_p = require('./Category_p');
 
 
-const Evaluation = db.define('Evaluation', {
+const Evaluation = DB.define('Evaluation', {
     nomEvaluation: {
         type: Sequelize.STRING(50),
         allowNull: false,

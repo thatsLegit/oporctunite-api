@@ -3,16 +3,23 @@ const dotenv = require('dotenv');
 const morgan = require('morgan'); //morgan: logger middleware
 const colors = require('colors');
 
-const db = require('./config/db');
-
 //load env vars
 dotenv.config({ path: './config/config.env' });
 
+const DB = require('./config/db');
+
 //Connect to database
-db();
+DB
+    .authenticate()
+    .then(() => {
+        console.log('Connection has been established successfully.');
+    })
+    .catch(err => {
+        console.error('Unable to connect to the database:', err);
+    });
 
 //require routes
-//const tests = require('./routes/tests');
+const tests = require('./routes/tests');
 
 //Initialize express
 const app = express();
@@ -27,7 +34,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 //Mount routers
-//app.use('/oporctunite-api/v1/tests', tests);
+app.use('/oporctunite-api/v1/tests', tests);
 
 
 //Start the server
@@ -41,5 +48,10 @@ connect to Mysql whathever the reason*/
 process.on('unhandledRejection', (err, promise) => {
     console.log(`error: ${err.message}`.red);
     //close server & exit process
+    server.close(() => process.exit(1));
+});
+//killall -9 node kills all node process just in case...
+process.on('SIGTERM', (err, promise) => {
+    console.log(`error: ${err.message}`.red);
     server.close(() => process.exit(1));
 });

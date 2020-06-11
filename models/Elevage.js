@@ -1,9 +1,9 @@
 const Sequelize = require('sequelize');
-const db = require('../config/db');
+const DB = require('../config/db');
 const Utilisateur = require('./Utilisateur');
 
 
-const Elevage = db.define('Elevage', {
+const Elevage = DB.define('Elevage', {
     numEleveur: {
         type: Sequelize.STRING(7),
         allowNull: false,

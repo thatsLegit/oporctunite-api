@@ -1,9 +1,9 @@
 const Sequelize = require('sequelize');
-const db = require('../config/db');
+const DB = require('../config/db');
 const Elevage = require('./Elevage');
 const Evaluation = require('./Evaluation');
 
-const Test = db.define('Test', {
+const Test = DB.define('Test', {
     idTest: {
         type: Sequelize.INTEGER(11),
         autoIncrement: true,
@@ -13,6 +13,10 @@ const Test = db.define('Test', {
     valeur: {
         type: Sequelize.INTEGER(11),
         allowNull: false
+    },
+    dateT: {
+        type: Sequelize.DATE,
+        allowNull: true
     },
     nbTruies: {
         type: Sequelize.INTEGER(11),
@@ -33,18 +37,7 @@ const Test = db.define('Test', {
             model: Evaluation,
             key: 'nomEvaluation'
         }
-    },
-});
-
-Elevage.belongsToMany(Evaluation, { //numEleveur
-    through: 'Test',
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
-});
-Evaluation.belongsToMany(Elevage, { //nomEvaluation
-    through: 'Test',
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
+    }
 });
 
 

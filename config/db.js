@@ -1,26 +1,19 @@
 const Sequelize = require('sequelize');
 
 
-const db = () => {
-    const connectDB = new Sequelize(process.env.MYSQL_URI, {
+const DB = new Sequelize(process.env.MYSQL_URI, {
+    define: {
         timestamps: false, //disables createdAt and updatedAt by default
-        pool: {
-            max: 5,
-            min: 0,
-            acquire: 30000,
-            idle: 10000
-        }
-    });
-
-    connectDB
-        .authenticate()
-        .then(() => {
-            console.log('Connection has been established successfully.');
-        })
-        .catch(err => {
-            console.error('Unable to connect to the database:', err);
-        });
-};
+        freezeTableName: true, //disablesthe 's' in querying tables
+    },
+    pool: {
+        max: 5,
+        min: 0,
+        acquire: 30000,
+        idle: 10000
+    },
+    timezone: '+01:00'
+});
 
 
-module.exports = db;
+module.exports = DB;

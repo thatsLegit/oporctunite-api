@@ -1,9 +1,9 @@
 const Sequelize = require('sequelize');
-const db = require('../config/db');
+const DB = require('../config/db');
 const Category_g = require('./Category_g');
 
 
-const Category_p = db.define('Category_p', {
+const Category_p = DB.define('Category_p', {
     nomCategorieP: {
         type: Sequelize.STRING(100),
         allowNull: false,
