@@ -2,6 +2,10 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan'); //morgan: logger middleware
 const colors = require('colors');
+const { momentFr } = require('./helper/momentFr');
+
+//moment locale fr formatting helper
+momentFr();
 
 //load env vars
 dotenv.config({ path: './config/config.env' });
@@ -20,6 +24,7 @@ DB
 
 //require routes
 const tests = require('./routes/tests');
+const bilans = require('./routes/bilans');
 
 //Initialize express
 const app = express();
@@ -35,6 +40,7 @@ if (process.env.NODE_ENV === "development") {
 
 //Mount routers
 app.use('/oporctunite-api/v1/tests', tests);
+app.use('/oporctunite-api/v1/bilans', bilans);
 
 
 //Start the server

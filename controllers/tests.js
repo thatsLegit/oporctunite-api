@@ -28,7 +28,7 @@ exports.getTest = async (req, res, next) => {
     try {
         const test = await Test.findByPk(req.params.id);
         let result = test.dataValues;
-        result.dateT = moment(test.dateT).lang("fr").format('Do MMMM YYYY, HH:mm:ss');
+        result.dateT = moment(test.dateT).format('Do MMMM YYYY, HH:mm:ss');
         res.status(200).json({ success: true, data: result });
     } catch (error) {
         console.log(error);
