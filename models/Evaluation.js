@@ -22,11 +22,5 @@ const Evaluation = DB.define('Evaluation', {
     }
 });
 
-Category_p.hasMany(Evaluation, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
-});
-Evaluation.belongsTo(Category_p);
-
 
 module.exports = Evaluation;

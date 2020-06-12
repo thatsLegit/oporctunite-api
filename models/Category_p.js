@@ -19,11 +19,5 @@ const Category_p = DB.define('Category_p', {
     }
 });
 
-Category_g.hasMany(Category_p, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
-});
-Category_g.belongsTo(Category_p);
-
 
 module.exports = Category_p;

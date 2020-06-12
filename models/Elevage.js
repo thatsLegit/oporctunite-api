@@ -27,11 +27,5 @@ const Elevage = DB.define('Elevage', {
     }
 });
 
-Utilisateur.hasOne(Elevage, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
-});
-Elevage.belongsTo(Utilisateur);
-
 
 module.exports = Elevage;

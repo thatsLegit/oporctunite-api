@@ -25,6 +25,7 @@ DB
 //require routes
 const tests = require('./routes/tests');
 const bilans = require('./routes/bilans');
+const eleveurs = require('./routes/eleveurs');
 
 //Initialize express
 const app = express();
@@ -41,6 +42,7 @@ if (process.env.NODE_ENV === "development") {
 //Mount routers
 app.use('/oporctunite-api/v1/tests', tests);
 app.use('/oporctunite-api/v1/bilans', bilans);
+app.use('/oporctunite-api/v1/eleveurs', eleveurs);
 
 
 //Start the server

@@ -1,12 +1,12 @@
 const express = require('express');
-const router = express.Router();
-const { getNoteGlobaleCategorie, getNoteGlobaleSousCategorie, getNoteGlobaleEvaluation } = require('../controllers/bilans');
+const { getNoteCategorie, getNoteSousCategorie, getNoteEvaluation } = require('../controllers/bilans');
 
+//mergeParams allows crossRouting
+const router = express.Router({ mergeParams: true });
 
-
-router.route('/categorie').post(getNoteGlobaleCategorie);
-router.route('/sous-categorie').post(getNoteGlobaleSousCategorie);
-router.route('/evaluation').post(getNoteGlobaleEvaluation);
+router.route('/categorie').post(getNoteCategorie);
+router.route('/sous-categorie').post(getNoteSousCategorie);
+router.route('/evaluation').post(getNoteEvaluation);
 
 
 module.exports = router;
