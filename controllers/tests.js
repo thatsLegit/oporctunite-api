@@ -1,4 +1,5 @@
 const Test = require('../models/Test');
+const ErrorResponse = require('../helper/errorResponse');
 const moment = require('moment');
 
 //Here we have all operations that are associated with the bootcamps routes
@@ -15,9 +16,9 @@ exports.getTests = async (req, res, next) => {
             test.dateT = moment(test.dateT).lang("fr").format('Do MMMM YYYY, HH:mm:ss');
         });
         return res.status(200).json({ success: true, count: result.length, data: result });
-    } catch (error) {
-        console.log(error);
-        res.status(400).json({ success: false });
+
+    } catch (err) {
+        next(err);
     }
 };
 
@@ -27,12 +28,17 @@ exports.getTests = async (req, res, next) => {
 exports.getTest = async (req, res, next) => {
     try {
         const test = await Test.findByPk(req.params.id);
+
+        if (!test) { //wrong id error
+            return next(new ErrorResponse(`Aucun test trouvé avec l'id ${req.params.id}`, 404));
+        }
+
         let result = test.dataValues;
         result.dateT = moment(test.dateT).format('Do MMMM YYYY, HH:mm:ss');
         return res.status(200).json({ success: true, data: result });
-    } catch (error) {
-        console.log(error);
-        res.status(400).json({ success: false });
+
+    } catch (err) { //other error including formatting and server errs
+        next(err)
     }
 };
 
@@ -43,8 +49,8 @@ exports.createTest = async (req, res, next) => {
     try {
         const test = await Test.create(req.body);
         return res.status(201).json({ success: true, data: test });
-    } catch (error) {
-        res.status(400).json({ success: false });
+    } catch (err) {
+        next(err);
     }
 };
 
@@ -53,15 +59,21 @@ exports.createTest = async (req, res, next) => {
 // @access      Public
 exports.deleteTest = async (req, res, next) => {
     try {
+        const test = await Test.findByPk(req.params.id);
+
+        if (!test) {
+            return next(new ErrorResponse(`Aucun test trouvé avec l'id ${req.params.id}`, 404));
+        }
+
         await Test.destroy({
             where: {
                 idTest: req.params.id
             }
-        })
+        });
         return res.status(200).json({ success: true });
-    } catch (error) {
-        console.log(error);
-        res.status(400).json({ success: false });
+
+    } catch (err) {
+        next(err);
     }
 };
 
@@ -73,14 +85,13 @@ exports.updateTest = async (req, res, next) => {
         const test = await Test.findByPk(parseInt(req.params.id));
 
         if (!test) {
-            res.status(404).json({ success: false });
+            return next(new ErrorResponse(`Aucun test trouvé avec l'id ${req.params.id}`, 404));
         }
 
         await test.update(req.body);
         return res.status(200).json({ success: true });
 
-    } catch (error) {
-        console.log(error);
-        res.status(400).json({ success: false });
+    } catch (err) {
+        next(err)
     }
 };

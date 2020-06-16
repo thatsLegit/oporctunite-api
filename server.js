@@ -2,7 +2,9 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan'); //morgan: logger middleware
 const colors = require('colors');
+const errorHandler = require('./middlewares/error');
 const { momentFr } = require('./helper/momentFr');
+//Ne pas oublier d'inclure https, certificat ssl à la fin
 
 //moment locale fr formatting helper
 momentFr();
@@ -44,6 +46,8 @@ app.use('/api/v1/tests', tests);
 app.use('/api/v1/bilans', bilans);
 app.use('/api/v1/eleveurs', eleveurs);
 
+//Error handling middleware
+app.use(errorHandler);
 
 //Start the server
 const PORT = process.env.PORT || 5000;

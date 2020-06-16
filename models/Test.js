@@ -8,23 +8,35 @@ const Test = DB.define('test', {
         type: Sequelize.INTEGER(11),
         autoIncrement: true,
         primaryKey: true,
-        allowNull: false
+        allowNull: true,
     },
     valeur: {
         type: Sequelize.INTEGER(11),
-        allowNull: false
+        allowNull: false,
+        validate: {
+            min: 0,
+            max: 10,
+            isNumeric: true
+        }
     },
     dateT: {
         type: Sequelize.DATE,
-        allowNull: true
+        allowNull: true,
     },
     nbTruies: {
         type: Sequelize.INTEGER(11),
-        allowNull: false
+        allowNull: false,
+        validate: {
+            isInt: true,
+            min: 1
+        }
     },
     numEleveur: {
         type: Sequelize.STRING(7),
         allowNull: false,
+        validate: {
+            is: /^FR.{5}$/
+        },
         references: {
             model: Elevage,
             key: 'numEleveur'
@@ -33,6 +45,9 @@ const Test = DB.define('test', {
     nomEvaluation: {
         type: Sequelize.STRING(50),
         allowNull: false,
+        validate: {
+            is: /^[a-zA-Z ]*$/
+        },
         references: {
             model: Evaluation,
             key: 'nomEvaluation'
