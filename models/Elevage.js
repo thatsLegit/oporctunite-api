@@ -3,7 +3,7 @@ const DB = require('../config/db');
 const Utilisateur = require('./Utilisateur');
 
 
-const Elevage = DB.define('Elevage', {
+const Elevage = DB.define('elevage', {
     numEleveur: {
         type: Sequelize.STRING(7),
         allowNull: false,

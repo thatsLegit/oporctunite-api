@@ -3,7 +3,7 @@ const DB = require('../config/db');
 const Elevage = require('./Elevage');
 const Evaluation = require('./Evaluation');
 
-const Test = DB.define('Test', {
+const Test = DB.define('test', {
     idTest: {
         type: Sequelize.INTEGER(11),
         autoIncrement: true,

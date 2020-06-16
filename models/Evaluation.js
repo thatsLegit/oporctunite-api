@@ -3,7 +3,7 @@ const DB = require('../config/db');
 const Category_p = require('./Category_p');
 
 
-const Evaluation = DB.define('Evaluation', {
+const Evaluation = DB.define('evaluation', {
     nomEvaluation: {
         type: Sequelize.STRING(50),
         allowNull: false,

@@ -14,7 +14,7 @@ exports.getTests = async (req, res, next) => {
         result.forEach(test => {
             test.dateT = moment(test.dateT).lang("fr").format('Do MMMM YYYY, HH:mm:ss');
         });
-        res.status(200).json({ success: true, count: result.length, data: result });
+        return res.status(200).json({ success: true, count: result.length, data: result });
     } catch (error) {
         console.log(error);
         res.status(400).json({ success: false });
@@ -29,7 +29,7 @@ exports.getTest = async (req, res, next) => {
         const test = await Test.findByPk(req.params.id);
         let result = test.dataValues;
         result.dateT = moment(test.dateT).format('Do MMMM YYYY, HH:mm:ss');
-        res.status(200).json({ success: true, data: result });
+        return res.status(200).json({ success: true, data: result });
     } catch (error) {
         console.log(error);
         res.status(400).json({ success: false });
@@ -42,7 +42,7 @@ exports.getTest = async (req, res, next) => {
 exports.createTest = async (req, res, next) => {
     try {
         const test = await Test.create(req.body);
-        res.status(201).json({ success: true, data: test });
+        return res.status(201).json({ success: true, data: test });
     } catch (error) {
         res.status(400).json({ success: false });
     }
@@ -58,7 +58,7 @@ exports.deleteTest = async (req, res, next) => {
                 idTest: req.params.id
             }
         })
-        res.status(200).json({ success: true });
+        return res.status(200).json({ success: true });
     } catch (error) {
         console.log(error);
         res.status(400).json({ success: false });
@@ -77,7 +77,7 @@ exports.updateTest = async (req, res, next) => {
         }
 
         await test.update(req.body);
-        res.status(200).json({ success: true });
+        return res.status(200).json({ success: true });
 
     } catch (error) {
         console.log(error);

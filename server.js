@@ -40,9 +40,9 @@ if (process.env.NODE_ENV === "development") {
 }
 
 //Mount routers
-app.use('/oporctunite-api/v1/tests', tests);
-app.use('/oporctunite-api/v1/bilans', bilans);
-app.use('/oporctunite-api/v1/eleveurs', eleveurs);
+app.use('/api/v1/tests', tests);
+app.use('/api/v1/bilans', bilans);
+app.use('/api/v1/eleveurs', eleveurs);
 
 
 //Start the server
