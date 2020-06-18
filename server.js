@@ -29,6 +29,8 @@ const tests = require('./routes/tests');
 const bilans = require('./routes/bilans');
 const eleveurs = require('./routes/eleveurs');
 const evaluations = require('./routes/evaluations');
+const sousCategories = require('./routes/sousCategories');
+const categories = require('./routes/categories');
 
 //Initialize express
 const app = express();
@@ -47,6 +49,8 @@ app.use('/api/v1/tests', tests);
 app.use('/api/v1/bilans', bilans);
 app.use('/api/v1/eleveurs', eleveurs);
 app.use('/api/v1/evaluations', evaluations);
+app.use('/api/v1/sousCategories', sousCategories);
+app.use('/api/v1/categories', categories);
 
 //Error handling middleware
 app.use(errorHandler);

@@ -1,4 +1,3 @@
-const DB = require('../config/db');
 const Sequelize = require('sequelize');
 const Evaluation = require('../models/Evaluation');
 const Op = Sequelize.Op;
@@ -7,7 +6,7 @@ const Op = Sequelize.Op;
 
 
 // @desc        get all evaluations
-// @route       GET /api/v1/evaluations ou GET /api/v1/evaluations/mot 
+// @route       GET /api/v1/evaluations ou GET /api/v1/evaluations/search/:mot 
 // @access      Public
 
 exports.getEvaluations = async (req, res, next) => {
@@ -35,9 +34,8 @@ exports.getEvaluations = async (req, res, next) => {
     }
 };
 
-
 // @desc        get a single evaluation
-// @route       GET /api/v1/evaluations/nomEvaluation
+// @route       GET /api/v1/evaluations/:nomEvaluation
 // @access      Public
 
 exports.getEvaluation = async (req, res, next) => {
@@ -56,6 +54,27 @@ exports.getEvaluation = async (req, res, next) => {
     }
 };
 
+// @desc        Requête qui affiche les évaluations pour une sous-catégorie donnée
+// @route       GET /api/v1/evaluations
+// @access      Public
+
+exports.getEvaluationGivenSousCateg = async (req, res, next) => {
+    try {
+        const categ = req.params.nomCategorieP;
+
+        const result = await Evaluation.findAll({
+            where: {
+                nomCategorieP: categ
+            }
+        });
+
+        res.status(200).json({ success: true, data: result });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
 // @desc        create an evaluation
 // @route       POST /api/v1/evaluations
 // @access      Public
@@ -71,7 +90,7 @@ exports.createEvaluation = async (req, res, next) => {
 };
 
 // @desc        delete an evaluation
-// @route       DELETE /api/v1/evaluations/nomEvaluation
+// @route       DELETE /api/v1/evaluations/:nomEvaluation
 // @access      Public
 
 exports.deleteEvaluation = async (req, res, next) => {
@@ -95,7 +114,7 @@ exports.deleteEvaluation = async (req, res, next) => {
 };
 
 // @desc        delete an evaluation
-// @route       PUT /api/v1/evaluations/nomEvaluation
+// @route       PUT /api/v1/evaluations/:nomEvaluation
 // @access      Public
 
 exports.updateEvaluation = async (req, res, next) => {
@@ -114,26 +133,5 @@ exports.updateEvaluation = async (req, res, next) => {
     }
 };
 
-
-// @desc        Requête qui affiche les évaluations pour une sous-catégorie donnée
-// @route       POST /api/v1/evaluation/evaluation
-// @access      Public
-
-exports.getEvaluationGivenSousCateg = async (req, res, next) => {
-    try {
-        const categ = req.body.categ;
-
-        const result = await DB.query("SELECT E.nomEvaluation FROM evaluation E WHERE E.nomCategorieP = :categP", {
-            replacements: { categP: categ },
-            raw: true,
-            type: Sequelize.QueryTypes.SELECT
-        });
-
-        res.status(200).json({ success: true, data: result });
-
-    } catch (err) {
-        next(err);
-    }
-};
 
 
