@@ -28,7 +28,7 @@ DB
 const tests = require('./routes/tests');
 const bilans = require('./routes/bilans');
 const eleveurs = require('./routes/eleveurs');
-const evaluation = require('./routes/evaluation');
+const evaluations = require('./routes/evaluations');
 
 //Initialize express
 const app = express();
@@ -46,7 +46,7 @@ if (process.env.NODE_ENV === "development") {
 app.use('/api/v1/tests', tests);
 app.use('/api/v1/bilans', bilans);
 app.use('/api/v1/eleveurs', eleveurs);
-app.use('/api/v1/evaluation', evaluation);
+app.use('/api/v1/evaluations', evaluations);
 
 //Error handling middleware
 app.use(errorHandler);
