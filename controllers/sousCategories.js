@@ -1,58 +1,22 @@
-const ErrorResponse = require('../helper/errorResponse');
-const Category_p = require('../models/Category_p');
-const Sequelize = require('sequelize');
-const Op = Sequelize.Op;
 
-//Ce controller permet de d'afficher les sous-catégories à partir d'une catégorie, ainsi que des réaliser les opérations GET basiques sur les sous catégories
+//Ce controller permet de d'afficher les sous-catégories à partir d'une catégorie, et des évaluations à partir d'une sous-catégorie afin de pouvoir être selectionner pour réaliser un ou plusieurs test sur les évaluations choisies
 
-
-// @desc        Get all category_p
-// @route       /api/v1/sousCategories
-// @access      Public
-exports.getSousCategories = async (req, res, next) => {
-    try {
-        const sousCategorie = await Category_p.findAll();
-        let result = sousCategorie.map(sousCateg => sousCateg.dataValues);
-
-        return res.status(200).json({ success: true, count: result.length, data: result });
-
-    } catch (err) {
-        next(err);
-    }
-};
-
-// @desc        Get single category_p
-// @route       GET /api/v1/sousCategories/:nomCategorieP
-// @access      Public
-exports.getSousCategorie = async (req, res, next) => {
-    try {
-        const sousCategorie = await Category_p.findByPk(req.params.nomCategorieP);
-
-        if (!sousCategorie) { //wrong id error
-            return next(new ErrorResponse(`Aucune sous-catégorie trouvée avec le nom ${req.params.nomCategorieP}`, 404));
-        }
-
-        let result = sousCategorie.dataValues;
-
-        return res.status(200).json({ success: true, data: result });
-
-    } catch (err) {
-        next(err)
-    }
-};
 
 // @desc        Requête qui affiche les sous-catégories pour une catégorie donnée
-// @route       GET /api/v1/:nomCategorieG/sousCategories/categorie
+// @route       POST /api/v1/evaluation/sous-categorie
 // @access      Public
 
-exports.getSousCategoriesGivenCateg = async (req, res, next) => {
-    try {
-        const categ = req.params.nomCategorieG;
+// SELECT P.nomCategorieP FROM categorie_p AS P WHERE P.nomCategorieG= :categG
 
-        const result = await Category_p.findAll({
-            where: {
-                nomCategorieG: categ
-            }
+
+exports.getSousCategories = async (req, res, next) => {
+    try {
+        const categ = req.body.categ;
+
+        const result = await DB.query("SELECT P.nomCategorieP FROM categorie_p AS P WHERE P.nomCategorieG= :categG", {
+            replacements: { categG: categ },
+            raw: true,
+            type: Sequelize.QueryTypes.SELECT
         });
 
         res.status(200).json({ success: true, data: result });

@@ -23,7 +23,7 @@ exports.getTests = async (req, res, next) => {
 };
 
 // @desc        Get single test
-// @route       GET /api/v1/tests/:id
+// @route       GET /api/v1/tests/id
 // @access      Public
 exports.getTest = async (req, res, next) => {
     try {
@@ -55,7 +55,7 @@ exports.createTest = async (req, res, next) => {
 };
 
 // @desc        Delete a test
-// @route       DELETE /api/v1/tests/:id
+// @route       DELETE /api/v1/tests/id
 // @access      Public
 exports.deleteTest = async (req, res, next) => {
     try {
@@ -78,7 +78,7 @@ exports.deleteTest = async (req, res, next) => {
 };
 
 // @desc        update a test
-// @route       PUT /api/v1/tests/:id
+// @route       PUT /api/v1/tests/id
 // @access      Public
 exports.updateTest = async (req, res, next) => {
     try {
