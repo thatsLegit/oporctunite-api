@@ -9,7 +9,7 @@ const ErrorResponse = require('../helper/errorResponse');
 
 
 // @desc        Note globale sur une catégorie
-// @route       POST /api/v1/bilans/categorie ou /api/v1/eleveurs/:numEleveur/bilans/categorie
+// @route       POST /api/v1/bilans/categorie
 // @access      Public
 
 // SELECT *, AVG(T.valeur)
@@ -92,7 +92,7 @@ exports.getNoteCategorie = async (req, res, next) => {
 
 
 // @desc        Note globale sur une sous-catégorie
-// @route       POST /api/v1/bilans/sous-categorie ou /api/v1/eleveurs/:numEleveur/bilans/sous-categorie
+// @route       POST /api/v1/bilans/sous-categorie
 // @access      Public
 
 // FROM categorie_p PC
@@ -168,7 +168,7 @@ exports.getNoteSousCategorie = async (req, res, next) => {
 
 
 // @desc        Note globale sur une évaluation
-// @route       POST /api/v1/bilans/evaluation ou /api/v1/eleveurs/:numEleveur/bilans/evaluation
+// @route       POST /api/v1/bilans/evaluation
 // @access      Public
 
 // SELECT AVG(T.valeur)

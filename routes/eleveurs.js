@@ -6,7 +6,7 @@ const bilansRouter = require('./bilans');
 //Main router
 const router = express.Router();
 
-//re-routage vers bilans
+//Re-route into other resource routers
 router.use('/:numEleveur/bilans', bilansRouter);
 
 
