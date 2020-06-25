@@ -10,23 +10,29 @@ const Utilisateur = DB.define('utilisateur', {
     },
     email: {
         type: Sequelize.STRING(50),
-        allowNull: false
+        allowNull: false,
+        isEmail: true
     },
     telephone: {
         type: Sequelize.INTEGER(11),
-        allowNull: false
+        allowNull: false,
+        validate: {
+            is: /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/
+        }
     },
     ville: {
         type: Sequelize.STRING(50),
-        allowNull: false
-    },
-    telephone: {
-        type: Sequelize.INTEGER(11),
-        allowNull: false
+        allowNull: false,
+        validate: {
+            is: ["^[a-z]+$", 'i']
+        }
     },
     codePostal: {
         type: Sequelize.INTEGER(5),
         allowNull: false,
+        validate: {
+            iisInt: true
+        }
     },
     adresse: {
         type: Sequelize.STRING(50),
@@ -42,7 +48,10 @@ const Utilisateur = DB.define('utilisateur', {
     },
     type_utilisateur: {
         type: Sequelize.STRING(11),
-        allowNull: false
+        allowNull: false,
+        validate: {
+            isIn: [['elevage', 'veterinaire']]
+        }
     }
 });
 

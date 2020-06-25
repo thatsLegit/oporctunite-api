@@ -7,7 +7,10 @@ const Elevage = DB.define('elevage', {
     numEleveur: {
         type: Sequelize.STRING(7),
         allowNull: false,
-        primaryKey: true
+        primaryKey: true,
+        validate: {
+            is: /^FR.{5}$/
+        }
     },
     nomElevage: {
         type: Sequelize.STRING(50),
@@ -15,7 +18,10 @@ const Elevage = DB.define('elevage', {
     },
     tailleElevage: {
         type: Sequelize.INTEGER(11),
-        allowNull: false
+        allowNull: false,
+        validate: {
+            isNumeric: true
+        }
     },
     idutilisateur: {
         type: Sequelize.INTEGER(11),
