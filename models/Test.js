@@ -23,14 +23,6 @@ const Test = DB.define('test', {
         type: Sequelize.DATE,
         allowNull: true,
     },
-    nbTruies: {
-        type: Sequelize.INTEGER(11),
-        allowNull: false,
-        validate: {
-            isInt: true,
-            min: 1
-        }
-    },
     numEleveur: {
         type: Sequelize.STRING(7),
         allowNull: false,

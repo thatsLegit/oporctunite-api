@@ -19,6 +19,13 @@ const Evaluation = DB.define('evaluation', {
             model: Category_p,
             key: 'nomCategorieP'
         }
+    },
+    nbTruies: {
+        type: Sequelize.INTEGER(11),
+        allowNull: true,
+        validate: {
+            isInt: true
+        }
     }
 });
 
