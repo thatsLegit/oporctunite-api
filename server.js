@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan'); //morgan: logger middleware
@@ -43,6 +44,9 @@ To be used only in development mode*/
 if (process.env.NODE_ENV === "development") {
     app.use(morgan('dev'));
 }
+
+//Set static folder (accessible in the url through localhost:port/uploads/...)
+app.use(express.static(path.join(__dirname, 'public')));
 
 //Mount routers
 app.use('/api/v1/tests', tests);
