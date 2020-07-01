@@ -4,7 +4,7 @@ const { getNoteCategorie, getNoteSousCategorie, getNoteEvaluation } = require('.
 //mergeParams allows crossRouting
 const router = express.Router({ mergeParams: true });
 
-router.route('/categorie').post(getNoteCategorie);
+router.route('/categorie').get(getNoteCategorie);
 router.route('/sous-categorie').post(getNoteSousCategorie);
 router.route('/evaluation').post(getNoteEvaluation);
 
