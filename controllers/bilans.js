@@ -57,7 +57,7 @@ const ErrorResponse = require('../helper/errorResponse');
 
 exports.getNoteCategorie = async (req, res, next) => {
     try {
-        const categ = req.body.categ;
+
         const numEleveur = req.params.numEleveur ? req.params.numEleveur : null;
 
         if (numEleveur) {
@@ -67,8 +67,8 @@ exports.getNoteCategorie = async (req, res, next) => {
                 return next(new ErrorResponse(`Aucun eleveur trouvé avec l'id ${numEleveur}`, 404));
             }
 
-            const result = await DB.query("SELECT AVG(T.valeur) FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE GC.nomCategorieG = :categG AND E.numEleveur= :numEleveur AND T.dateT IN (SELECT MAX(T.dateT) FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE GC.nomCategorieG = :categG AND E.numEleveur= :numEleveur GROUP BY T.nomEvaluation)", {
-                replacements: { categG: categ, numEleveur },
+            const result = await DB.query("SELECT AVG(T.valeur), GC.nomCategorieG FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur=:numEleveur AND T.dateT IN (SELECT MAX(T.dateT) FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur=:numEleveur GROUP BY T.nomEvaluation) GROUP BY GC.nomCategorieG", {
+                replacements: { numEleveur },
                 raw: true,
                 type: Sequelize.QueryTypes.SELECT
             });
@@ -77,8 +77,8 @@ exports.getNoteCategorie = async (req, res, next) => {
 
         const date6monthsAgo = moment(new Date(Date.now())).subtract(6, 'months').format('YYYY-MM-Do HH:mm:ss');
 
-        const result = await DB.query("SELECT AVG(T.valeur) FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation E ON E.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = E.nomEvaluation WHERE GC.nomCategorieG = :categG AND T.dateT >= :date", {
-            replacements: { date: date6monthsAgo, categG: categ },
+        const result = await DB.query("SELECT AVG(T.valeur), GC.nomCategorieG FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation E ON E.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = E.nomEvaluation WHERE T.dateT >= :date GROUP BY GC.nomCategorieG", {
+            replacements: { date: date6monthsAgo},
             raw: true,
             type: Sequelize.QueryTypes.SELECT
         });
