@@ -26,6 +26,18 @@ const Evaluation = DB.define('evaluation', {
         validate: {
             isInt: true
         }
+    },
+    photo1: {
+        type: Sequelize.STRING(255),
+        allowNull: true
+    },
+    photo2: {
+        type: Sequelize.STRING(255),
+        allowNull: true
+    },
+    photo3: {
+        type: Sequelize.STRING(255),
+        allowNull: true
     }
 });
 
