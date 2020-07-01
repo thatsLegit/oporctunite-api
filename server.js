@@ -44,6 +44,9 @@ if (process.env.NODE_ENV === "development") {
     app.use(morgan('dev'));
 }
 
+//Set static folder (accessible in the url through localhost:port/uploads/...)
+app.use(express.static(path.join(__dirname, 'public')));
+
 //Mount routers
 app.use('/api/v1/tests', tests);
 app.use('/api/v1/bilans', bilans);
