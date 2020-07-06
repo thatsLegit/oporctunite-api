@@ -11,7 +11,7 @@ const Test = DB.define('test', {
         allowNull: true,
     },
     valeur: {
-        type: Sequelize.FLOAT(2, 1),
+        type: Sequelize.FLOAT(3, 1),
         allowNull: false,
         validate: {
             min: 0,
