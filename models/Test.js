@@ -11,12 +11,12 @@ const Test = DB.define('test', {
         allowNull: true,
     },
     valeur: {
-        type: Sequelize.INTEGER(11),
+        type: Sequelize.FLOAT(2, 1),
         allowNull: false,
         validate: {
             min: 0,
             max: 10,
-            isNumeric: true
+            isFloat: true
         }
     },
     dateT: {
