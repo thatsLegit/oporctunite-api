@@ -15,7 +15,7 @@ const Test = DB.define('test', {
         allowNull: false,
         validate: {
             min: 0,
-            max: 10,
+            max: 10.0,
             isFloat: true
         }
     },
