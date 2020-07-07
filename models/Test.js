@@ -37,9 +37,6 @@ const Test = DB.define('test', {
     nomEvaluation: {
         type: Sequelize.STRING(50),
         allowNull: false,
-        validate: {
-            is: /^[a-zA-Z ]*$/
-        },
         references: {
             model: Evaluation,
             key: 'nomEvaluation'
