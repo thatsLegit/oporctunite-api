@@ -205,7 +205,7 @@ exports.getNoteEvaluation = async (req, res, next) => {
                 return next(new ErrorResponse(`Aucun eleveur trouvé avec l'id ${numEleveur}`, 404));
             }
 
-            const result = await DB.query("SELECT T.valeur, T.nomEvaluation, EL.nomCategorieP, T.dateT FROM evaluation EL INNER JOIN test T ON T.nomEvaluation = EL.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur= :numEleveur GROUP BY T.nomEvaluation  ORDER BY T.dateT", {
+            const result = await DB.query("SELECT T.valeur, T.nomEvaluation, T.dateT FROM evaluation EL INNER JOIN test T ON T.nomEvaluation = EL.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur= :numEleveur GROUP BY T.idTest  ORDER BY T.dateT", {
                 replacements: { numEleveur },
                 raw: true,
                 type: Sequelize.QueryTypes.SELECT
@@ -215,7 +215,7 @@ exports.getNoteEvaluation = async (req, res, next) => {
 
         const date6monthsAgo = moment(new Date(Date.now())).subtract(6, 'months').format('YYYY-MM-Do HH:mm:ss');
 
-        const result = await DB.query("SELECT AVG(T.valeur) AS moyenneE, T.nomEvaluation, L.nomCategorieP, T.dateT FROM evaluation L INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE T.dateT >= :date GROUP BY T.nomEvaluation ORDER BY T.dateT", {
+        const result = await DB.query("SELECT AVG(T.valeur) AS moyenneE, T.nomEvaluation, T.dateT FROM evaluation L INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE T.dateT >= :date GROUP BY T.idTest ORDER BY T.dateT", {
             replacements: { date: date6monthsAgo},
             raw: true,
             type: Sequelize.QueryTypes.SELECT
