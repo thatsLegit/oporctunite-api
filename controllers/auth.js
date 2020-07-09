@@ -10,7 +10,7 @@ const Elevage = require('../models/Elevage');
 // @access      Public
 exports.login = async (req, res, next) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, type_utilisateur } = req.body;
 
         if (!email || !password) {
             return next(new ErrorResponse(`Accès securisé, veuillez renseigner un identifiant et un mot de passe`, 400));
@@ -27,8 +27,13 @@ exports.login = async (req, res, next) => {
             return next(new ErrorResponse(`Identifiants incorrects`, 401));
         }
 
-        const token = utilisateur.getSignedJwtToken();
-        return res.status(200).json({ success: true, token });
+        if (type_utilisateur == 'elevage') {
+            const idutilisateur = utilisateur.idutilisateur;
+            const elevage = await Elevage.findOne({ where: { idutilisateur: idutilisateur } });
+            const token = utilisateur.getSignedJwtToken(elevage.numEleveur);
+
+            return res.status(200).json({ success: true, token });
+        };
 
     } catch (err) {
         next(err);
