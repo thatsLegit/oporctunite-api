@@ -3,9 +3,13 @@ const DB = require('../config/db');
 const Utilisateur = require('./Utilisateur');
 
 
-const Elevage = DB.define('elevage', {
+const Model = Sequelize.Model;
+class Elevage extends Model { }
+
+Elevage.init({
     numEleveur: {
         type: Sequelize.STRING(7),
+        unique: true,
         allowNull: false,
         primaryKey: true,
         validate: {
@@ -14,6 +18,7 @@ const Elevage = DB.define('elevage', {
     },
     nomElevage: {
         type: Sequelize.STRING(50),
+        unique: true,
         allowNull: false
     },
     tailleElevage: {
@@ -31,7 +36,11 @@ const Elevage = DB.define('elevage', {
             key: 'idutilisateur'
         }
     }
+}, {
+    sequelize: DB,
+    modelName: 'elevage'
 });
+
 
 
 module.exports = Elevage;

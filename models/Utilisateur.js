@@ -1,7 +1,29 @@
 const Sequelize = require('sequelize');
 const DB = require('../config/db');
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
-const Utilisateur = DB.define('utilisateur', {
+
+const Model = Sequelize.Model;
+class Utilisateur extends Model {
+    //Instance level method =/= static
+    getSignedJwtToken() {
+        return jwt.sign({ idutilisateur: this.idutilisateur }, process.env.JWT_SECRET, {
+            expiresIn: process.env.JWT_EXPIRE
+        });
+    }
+
+    matchPasswords(enteredPassword) {
+        let hash = crypto.createHash('md5').update(enteredPassword).digest("hex");
+        if (hash == this.password) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+Utilisateur.init({
     idutilisateur: {
         type: Sequelize.INTEGER(11),
         allowNull: false,
@@ -10,11 +32,13 @@ const Utilisateur = DB.define('utilisateur', {
     },
     email: {
         type: Sequelize.STRING(50),
+        unique: true,
         allowNull: false,
         isEmail: true
     },
     telephone: {
         type: Sequelize.INTEGER(11),
+        unique: true,
         allowNull: false,
         validate: {
             is: /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/
@@ -53,6 +77,9 @@ const Utilisateur = DB.define('utilisateur', {
             isIn: [['elevage', 'veterinaire']]
         }
     }
+}, {
+    sequelize: DB,
+    modelName: 'utilisateur'
 });
 
 

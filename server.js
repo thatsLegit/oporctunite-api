@@ -32,6 +32,7 @@ const eleveurs = require('./routes/eleveurs');
 const evaluations = require('./routes/evaluations');
 const sousCategories = require('./routes/sousCategories');
 const categories = require('./routes/categories');
+const auth = require('./routes/auth');
 
 //Initialize express
 const app = express();
@@ -55,6 +56,7 @@ app.use('/api/v1/eleveurs', eleveurs);
 app.use('/api/v1/evaluations', evaluations);
 app.use('/api/v1/sousCategories', sousCategories);
 app.use('/api/v1/categories', categories);
+app.use('/api/v1/auth', auth);
 
 //Error handling middleware
 app.use(errorHandler);

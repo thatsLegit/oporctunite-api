@@ -48,6 +48,7 @@ exports.getTest = async (req, res, next) => {
 exports.createTest = async (req, res, next) => {
     try {
         const test = await Test.create(req.body);
+        console.log(test);
         return res.status(201).json({ success: true, data: test });
     } catch (err) {
         next(err);
