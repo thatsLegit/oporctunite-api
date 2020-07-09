@@ -7,7 +7,7 @@ const moment = require('moment');
 
 // @desc        Get all tests
 // @route       /api/v1/tests
-// @access      Public
+// @access      Private
 exports.getTests = async (req, res, next) => {
     try {
         const tests = await Test.findAll();
@@ -24,7 +24,7 @@ exports.getTests = async (req, res, next) => {
 
 // @desc        Get single test
 // @route       GET /api/v1/tests/:id
-// @access      Public
+// @access      Private
 exports.getTest = async (req, res, next) => {
     try {
         const test = await Test.findByPk(req.params.id);
@@ -44,7 +44,7 @@ exports.getTest = async (req, res, next) => {
 
 // @desc        create a test
 // @route       /api/v1/tests
-// @access      Public
+// @access      Private
 exports.createTest = async (req, res, next) => {
     try {
         const test = await Test.create(req.body);
@@ -57,7 +57,7 @@ exports.createTest = async (req, res, next) => {
 
 // @desc        Delete a test
 // @route       DELETE /api/v1/tests/:id
-// @access      Public
+// @access      Private
 exports.deleteTest = async (req, res, next) => {
     try {
         const test = await Test.findByPk(req.params.id);
@@ -80,7 +80,7 @@ exports.deleteTest = async (req, res, next) => {
 
 // @desc        update a test
 // @route       PUT /api/v1/tests/:id
-// @access      Public
+// @access      Private
 exports.updateTest = async (req, res, next) => {
     try {
         const test = await Test.findByPk(parseInt(req.params.id));

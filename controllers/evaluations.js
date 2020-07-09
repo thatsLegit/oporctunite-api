@@ -7,7 +7,7 @@ const Op = Sequelize.Op;
 
 // @desc        get all evaluations
 // @route       GET /api/v1/evaluations ou GET /api/v1/evaluations/search/:mot 
-// @access      Public
+// @access      Private
 
 exports.getEvaluations = async (req, res, next) => {
     try {
@@ -36,7 +36,7 @@ exports.getEvaluations = async (req, res, next) => {
 
 // @desc        get a single evaluation
 // @route       GET /api/v1/evaluations/:nomEvaluation
-// @access      Public
+// @access      Private
 
 exports.getEvaluation = async (req, res, next) => {
     try {
@@ -56,7 +56,7 @@ exports.getEvaluation = async (req, res, next) => {
 
 // @desc        Requête qui affiche les évaluations pour une sous-catégorie donnée
 // @route       GET /api/v1/evaluations
-// @access      Public
+// @access      Private
 
 exports.getEvaluationGivenSousCateg = async (req, res, next) => {
     try {
@@ -77,7 +77,7 @@ exports.getEvaluationGivenSousCateg = async (req, res, next) => {
 
 // @desc        create an evaluation
 // @route       POST /api/v1/evaluations
-// @access      Public
+// @access      Private
 
 exports.createEvaluation = async (req, res, next) => {
     try {
@@ -91,7 +91,7 @@ exports.createEvaluation = async (req, res, next) => {
 
 // @desc        delete an evaluation
 // @route       DELETE /api/v1/evaluations/:nomEvaluation
-// @access      Public
+// @access      Private
 
 exports.deleteEvaluation = async (req, res, next) => {
     try {
@@ -115,7 +115,7 @@ exports.deleteEvaluation = async (req, res, next) => {
 
 // @desc        delete an evaluation
 // @route       PUT /api/v1/evaluations/:nomEvaluation
-// @access      Public
+// @access      Private
 
 exports.updateEvaluation = async (req, res, next) => {
     try {

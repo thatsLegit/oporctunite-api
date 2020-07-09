@@ -6,7 +6,7 @@ const Category_p = require('../models/Category_p');
 
 // @desc        Get all category_p
 // @route       /api/v1/sousCategories
-// @access      Public
+// @access      Private
 exports.getSousCategories = async (req, res, next) => {
     try {
         const sousCategorie = await Category_p.findAll();
@@ -21,7 +21,7 @@ exports.getSousCategories = async (req, res, next) => {
 
 // @desc        Get single category_p
 // @route       GET /api/v1/sousCategories/:nomCategorieP
-// @access      Public
+// @access      Private
 exports.getSousCategorie = async (req, res, next) => {
     try {
         const sousCategorie = await Category_p.findByPk(req.params.nomCategorieP);
@@ -41,7 +41,7 @@ exports.getSousCategorie = async (req, res, next) => {
 
 // @desc        Requête qui affiche les sous-catégories pour une catégorie donnée
 // @route       GET /api/v1/:nomCategorieG/sousCategories/categorie
-// @access      Public
+// @access      Private
 
 exports.getSousCategoriesGivenCateg = async (req, res, next) => {
     try {

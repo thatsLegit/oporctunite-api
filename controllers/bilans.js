@@ -8,11 +8,11 @@ const ErrorResponse = require('../helper/errorResponse');
 //FORMAT BD : 2020-01-17 00:00:00
 
 
-// @desc        Note globale sur une catégorie
-// @route       POST /api/v1/bilans/categorie ou /api/v1/eleveurs/:numEleveur/bilans/categorie
-// @access      Public
+// @desc        Notes globales de toutes les catégories
+// @route       GET /api/v1/bilans/categories
+// @access      Private
 
-// SELECT *, AVG(T.valeur)
+// SELECT AVG(T.valeur) AS moyenneG
 // FROM categorie_g GC
 // INNER JOIN categorie_p PC
 // ON GC.nomCategorieG = PC.nomCategorieG
@@ -20,65 +20,15 @@ const ErrorResponse = require('../helper/errorResponse');
 // ON L.nomCategorieP = PC.nomCategorieP
 // INNER JOIN test T 
 // ON T.nomEvaluation = L.nomEvaluation
-// WHERE GC.nomCategorieG = :categG
-// AND T.dateT >= :date;
+// WHERE T.dateT >= :date
+// GROUP BY GC.nomCategorieG;
 
-//OU si numEleveur :
-
-// SELECT AVG(T.valeur)
-// FROM categorie_g GC
-// INNER JOIN categorie_p PC
-// ON GC.nomCategorieG = PC.nomCategorieG
-// INNER JOIN evaluation L 
-// ON L.nomCategorieP = PC.nomCategorieP
-// INNER JOIN test T 
-// ON T.nomEvaluation = L.nomEvaluation
-// INNER JOIN elevage E 
-// ON E.numEleveur = T.numEleveur
-// WHERE GC.nomCategorieG = "Bonne santé"
-// AND E.numEleveur= "FR312D1"
-// AND T.dateT IN (
-//     SELECT MAX(T.dateT)
-// 	FROM categorie_g GC
-//     INNER JOIN categorie_p PC
-//     ON GC.nomCategorieG = PC.nomCategorieG
-//     INNER JOIN evaluation L 
-//     ON L.nomCategorieP = PC.nomCategorieP
-//     INNER JOIN test T 
-//     ON T.nomEvaluation = L.nomEvaluation
-//     INNER JOIN elevage E 
-//     ON E.numEleveur = T.numEleveur
-//     WHERE GC.nomCategorieG = "Bonne santé"
-//     AND E.numEleveur= "FR312D1"
-//     GROUP BY T.nomEvaluation
-// )
-
-//En gros si on a un numEleveur en param, ce sera note utilisateur, sinon, note globale
-
-exports.getNoteCategorie = async (req, res, next) => {
+exports.getNotesCategories = async (req, res, next) => {
     try {
-
-        const numEleveur = req.params.numEleveur ? req.params.numEleveur : null;
-
-        if (numEleveur) {
-            const eleveur = await Elevage.findByPk(numEleveur);
-
-            if (!eleveur) {
-                return next(new ErrorResponse(`Aucun eleveur trouvé avec l'id ${numEleveur}`, 404));
-            }
-
-            const result = await DB.query("SELECT AVG(T.valeur) AS moyenneG, GC.nomCategorieG FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur=:numEleveur AND T.dateT IN (SELECT MAX(T.dateT) FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur=:numEleveur GROUP BY T.nomEvaluation) GROUP BY GC.nomCategorieG", {
-                replacements: { numEleveur },
-                raw: true,
-                type: Sequelize.QueryTypes.SELECT
-            });
-            return res.status(200).json({ success: true, data: result });
-        }
-
         const date6monthsAgo = moment(new Date(Date.now())).subtract(6, 'months').format('YYYY-MM-Do HH:mm:ss');
 
         const result = await DB.query("SELECT AVG(T.valeur) AS moyenneG, GC.nomCategorieG FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation E ON E.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = E.nomEvaluation WHERE T.dateT >= :date GROUP BY GC.nomCategorieG", {
-            replacements: { date: date6monthsAgo},
+            replacements: { date: date6monthsAgo },
             raw: true,
             type: Sequelize.QueryTypes.SELECT
         });
@@ -90,31 +40,21 @@ exports.getNoteCategorie = async (req, res, next) => {
     }
 };
 
+// @desc        Notes individuelles de toutes les catégories
+// @route       GET /api/v1/bilans/categories/elevage
+// @access      Private
 
-// @desc        Note globale sur une sous-catégorie
-// @route       POST /api/v1/bilans/sous-categorie ou /api/v1/eleveurs/:numEleveur/bilans/sous-categorie
-// @access      Public
-
-// FROM categorie_p PC
-// INNER JOIN evaluation E 
-// ON E.nomCategorieP = PC.nomCategorieP
-// INNER JOIN test T 
-// ON T.nomEvaluation = E.nomEvaluation
-// WHERE PC.nomCategorieP = "Absence de maladies"
-// AND T.dateT >= :date;
-
-//OU si numEleveur
-
-// SELECT  AVG(T.valeur)
-// FROM categorie_p PC
+// SELECT AVG(T.valeur) AS moyenneG
+// FROM categorie_g GC
+// INNER JOIN categorie_p PC
+// ON GC.nomCategorieG = PC.nomCategorieG
 // INNER JOIN evaluation L 
 // ON L.nomCategorieP = PC.nomCategorieP
 // INNER JOIN test T 
 // ON T.nomEvaluation = L.nomEvaluation
 // INNER JOIN elevage E 
 // ON E.numEleveur = T.numEleveur
-// WHERE PC.nomCategorieP = "Absence de maladies"
-// AND E.numEleveur= "FR312D1"
+// WHERE E.numEleveur= "FR312D1"
 // AND T.dateT IN (
 //     SELECT MAX(T.dateT)
 // 	FROM categorie_g GC
@@ -126,31 +66,42 @@ exports.getNoteCategorie = async (req, res, next) => {
 //     ON T.nomEvaluation = L.nomEvaluation
 //     INNER JOIN elevage E 
 //     ON E.numEleveur = T.numEleveur
-//     WHERE PC.nomCategorieP = "Absence de maladies"
-//     AND E.numEleveur= "FR312D1"
-//     group by T.nomEvaluation
+//     WHERE E.numEleveur= "FR312D1"
+//     GROUP BY T.nomEvaluation
 // )
 
-
-exports.getNoteSousCategorie = async (req, res, next) => {
+exports.getNotesCategoriesIndividuelles = async (req, res, next) => {
     try {
-        const numEleveur = req.params.numEleveur ? req.params.numEleveur : null;
+        const numEleveur = req.elevage.numEleveur;
 
-        if (numEleveur) {
-            const eleveur = await Elevage.findByPk(numEleveur);
+        const result = await DB.query("SELECT AVG(T.valeur) AS moyenneG, GC.nomCategorieG FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur=:numEleveur AND T.dateT IN (SELECT MAX(T.dateT) FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur=:numEleveur GROUP BY T.nomEvaluation) GROUP BY GC.nomCategorieG", {
+            replacements: { numEleveur },
+            raw: true,
+            type: Sequelize.QueryTypes.SELECT
+        });
+        return res.status(200).json({ success: true, data: result });
 
-            if (!eleveur) {
-                return next(new ErrorResponse(`Aucun eleveur trouvé avec l'id ${numEleveur}`, 404));
-            }
+    } catch (err) {
+        next(err);
+    }
+};
 
-            const result = await DB.query("SELECT AVG(T.valeur) AS moyenneP, PC.nomCategorieP, PC.nomCategorieG FROM categorie_p PC INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur= :numEleveur AND T.dateT IN (SELECT MAX(T.dateT) FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur= :numEleveur GROUP BY T.nomEvaluation) GROUP BY PC.nomCategorieP ORDER BY PC.nomCategorieG", {
-                replacements: { numEleveur },
-                raw: true,
-                type: Sequelize.QueryTypes.SELECT
-            });
-            return res.status(200).json({ success: true, data: result });
-        }
 
+// @desc        Notes globales de toutes les sous-catégories
+// @route       GET /api/v1/bilans/sous-categories
+// @access      Private
+
+// SELECT AVG(T.valeur) AS moyenneP
+// FROM categorie_p PC
+// INNER JOIN evaluation L 
+// ON L.nomCategorieP = PC.nomCategorieP
+// INNER JOIN test T 
+// ON T.nomEvaluation = L.nomEvaluation
+// WHERE T.dateT >= :date
+// GROUP BY PC.nomCategorieP;
+
+exports.getNotesSousCategories = async (req, res, next) => {
+    try {
         const date6monthsAgo = moment(new Date(Date.now())).subtract(6, 'months').format('YYYY-MM-Do HH:mm:ss');
 
         const result = await DB.query("SELECT AVG(T.valeur) AS moyenneP, PC.nomCategorieP, PC.nomCategorieG FROM categorie_p PC INNER JOIN evaluation E ON E.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = E.nomEvaluation WHERE T.dateT >= :date GROUP BY PC.nomCategorieP  ORDER BY PC.nomCategorieG", {
@@ -165,10 +116,54 @@ exports.getNoteSousCategorie = async (req, res, next) => {
     }
 };
 
+// @desc        Notes individuelles sur toutes les sous-catégories
+// @route       GET /api/v1/bilans/sous-categories/elevage
+// @access      Private
 
-// @desc        Note globale sur une évaluation
-// @route       POST /api/v1/bilans/evaluation ou /api/v1/eleveurs/:numEleveur/bilans/evaluation
-// @access      Public
+// SELECT AVG(T.valeur) AS moyenneP, PC.nomCategorieP, PC.nomCategorieG 
+// FROM categorie_p PC 
+// INNER JOIN evaluation L 
+// ON L.nomCategorieP = PC.nomCategorieP 
+// INNER JOIN test T 
+// ON T.nomEvaluation = L.nomEvaluation 
+// INNER JOIN elevage E 
+// ON E.numEleveur = T.numEleveur 
+// WHERE E.numEleveur= :numEleveur 
+// AND T.dateT IN (SELECT MAX(T.dateT) 
+//     FROM categorie_g GC 
+//     INNER JOIN categorie_p PC 
+//     ON GC.nomCategorieG = PC.nomCategorieG 
+//     INNER JOIN evaluation L 
+//     ON L.nomCategorieP = PC.nomCategorieP 
+//     INNER JOIN test T 
+//     ON T.nomEvaluation = L.nomEvaluation 
+//     INNER JOIN elevage E 
+//     ON E.numEleveur = T.numEleveur
+//     WHERE E.numEleveur= :numEleveur 
+//     GROUP BY T.nomEvaluation) 
+// GROUP BY PC.nomCategorieP 
+// ORDER BY PC.nomCategorieG;
+
+exports.getNotesSousCategoriesIndividuelles = async (req, res, next) => {
+    try {
+        const numEleveur = req.elevage.numEleveur;
+
+        const result = await DB.query("SELECT AVG(T.valeur) AS moyenneP, PC.nomCategorieP, PC.nomCategorieG FROM categorie_p PC INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur= :numEleveur AND T.dateT IN (SELECT MAX(T.dateT) FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur= :numEleveur GROUP BY T.nomEvaluation) GROUP BY PC.nomCategorieP ORDER BY PC.nomCategorieG", {
+            replacements: { numEleveur },
+            raw: true,
+            type: Sequelize.QueryTypes.SELECT
+        });
+        return res.status(200).json({ success: true, data: result });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+
+// @desc        Notes globales de toutes les évaluations
+// @route       GET /api/v1/bilans/evaluations
+// @access      Private
 
 // SELECT AVG(T.valeur)
 // FROM evaluation L
@@ -176,10 +171,28 @@ exports.getNoteSousCategorie = async (req, res, next) => {
 // ON T.nomEvaluation = L.nomEvaluation
 // INNER JOIN elevage E 
 // ON E.numEleveur = T.numEleveur
-// WHERE L.nomEvaluation = "nombre de bursites"
-// AND T.dateT >= '2020-01-17 00:00:00';
+// WHERE T.dateT >= '2020-01-17 00:00:00';
 
-//OU si numEleveur
+exports.getNotesEvaluations = async (req, res, next) => {
+    try {
+        const date6monthsAgo = moment(new Date(Date.now())).subtract(6, 'months').format('YYYY-MM-Do HH:mm:ss');
+
+        const result = await DB.query("SELECT AVG(T.valeur) AS moyenneE, T.nomEvaluation, T.dateT, T.idTest FROM evaluation L INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE T.dateT >= :date GROUP BY T.idTest ORDER BY T.dateT DESC", {
+            replacements: { date: date6monthsAgo },
+            raw: true,
+            type: Sequelize.QueryTypes.SELECT
+        });
+
+        res.status(200).json({ success: true, data: result });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc        Notes individuelles de toutes les évaluations
+// @route       GET /api/v1/bilans/evaluations/elevage
+// @access      Private
 
 // SELECT T.valeur
 // FROM evaluation L
@@ -187,41 +200,20 @@ exports.getNoteSousCategorie = async (req, res, next) => {
 // ON T.nomEvaluation = L.nomEvaluation
 // INNER JOIN elevage E 
 // ON E.numEleveur = T.numEleveur
-// WHERE L.nomEvaluation = "nombre de bursites"
-// AND E.numEleveur= "FR312D3"
+// WHERE E.numEleveur= "FR312D3"
 // ORDER BY T.dateT DESC
 // LIMIT 1;
 
-
-exports.getNoteEvaluation = async (req, res, next) => {
+exports.getNotesEvaluationsIndividuelles = async (req, res, next) => {
     try {
-        
-        const numEleveur = req.params.numEleveur ? req.params.numEleveur : null;
+        const numEleveur = req.elevage.numEleveur;
 
-        if (numEleveur) {
-            const eleveur = await Elevage.findByPk(numEleveur);
-
-            if (!eleveur) {
-                return next(new ErrorResponse(`Aucun eleveur trouvé avec l'id ${numEleveur}`, 404));
-            }
-
-            const result = await DB.query("SELECT T.valeur, T.nomEvaluation, T.dateT, T.idTest FROM evaluation EL INNER JOIN test T ON T.nomEvaluation = EL.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur= :numEleveur GROUP BY T.idTest  ORDER BY T.dateT DESC", {
-                replacements: { numEleveur },
-                raw: true,
-                type: Sequelize.QueryTypes.SELECT
-            });
-            return res.status(200).json({ success: true, data: result });
-        }
-
-        const date6monthsAgo = moment(new Date(Date.now())).subtract(6, 'months').format('YYYY-MM-Do HH:mm:ss');
-
-        const result = await DB.query("SELECT AVG(T.valeur) AS moyenneE, T.nomEvaluation, T.dateT, T.idTest FROM evaluation L INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE T.dateT >= :date GROUP BY T.idTest ORDER BY T.dateT DESC", {
-            replacements: { date: date6monthsAgo},
+        const result = await DB.query("SELECT T.valeur, T.nomEvaluation, T.dateT, T.idTest FROM evaluation EL INNER JOIN test T ON T.nomEvaluation = EL.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur= :numEleveur GROUP BY T.idTest ORDER BY T.dateT DESC", {
+            replacements: { numEleveur },
             raw: true,
             type: Sequelize.QueryTypes.SELECT
         });
-
-        res.status(200).json({ success: true, data: result });
+        return res.status(200).json({ success: true, data: result });
 
     } catch (err) {
         next(err);

@@ -6,7 +6,7 @@ const Category_g = require('../models/Category_g');
 
 // @desc        Get all categories
 // @route       /api/v1/categories
-// @access      Public
+// @access      Private
 exports.getCategories = async (req, res, next) => {
     try {
         const categories = await Category_g.findAll();
@@ -20,7 +20,7 @@ exports.getCategories = async (req, res, next) => {
 
 // @desc        Get single category
 // @route       GET /api/v1/categories/:nomCategorieG
-// @access      Public
+// @access      Private
 exports.getCategorie = async (req, res, next) => {
     try {
         const categorie = await Category_g.findByPk(req.params.nomCategorieG);

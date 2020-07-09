@@ -28,7 +28,6 @@ DB
 //require routes
 const tests = require('./routes/tests');
 const bilans = require('./routes/bilans');
-const eleveurs = require('./routes/eleveurs');
 const evaluations = require('./routes/evaluations');
 const sousCategories = require('./routes/sousCategories');
 const categories = require('./routes/categories');
@@ -52,7 +51,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 //Mount routers
 app.use('/api/v1/tests', tests);
 app.use('/api/v1/bilans', bilans);
-app.use('/api/v1/eleveurs', eleveurs);
 app.use('/api/v1/evaluations', evaluations);
 app.use('/api/v1/sousCategories', sousCategories);
 app.use('/api/v1/categories', categories);
