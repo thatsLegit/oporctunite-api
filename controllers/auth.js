@@ -1,6 +1,6 @@
 const ErrorResponse = require('../helper/errorResponse');
-const DB = require('../config/db');
 const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 const Utilisateur = require('../models/Utilisateur');
 const Elevage = require('../models/Elevage');
 
@@ -10,13 +10,17 @@ const Elevage = require('../models/Elevage');
 // @access      Public
 exports.login = async (req, res, next) => {
     try {
-        const { email, password, type_utilisateur } = req.body;
+        const { login, password, type_utilisateur } = req.body;
 
-        if (!email || !password) {
+        if (!login || !password) {
             return next(new ErrorResponse(`Accès securisé, veuillez renseigner un identifiant et un mot de passe`, 400));
         }
 
-        const utilisateur = await Utilisateur.findOne({ where: { email: email } });
+        const utilisateur = await Utilisateur.findOne({
+            where: {
+                [Op.or]: [{ email: login }, { telephone: login }]
+            }
+        });
 
         if (!utilisateur) {
             return next(new ErrorResponse(`Identifiants incorrects`, 401));

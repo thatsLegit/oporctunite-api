@@ -1,7 +1,5 @@
 const ErrorResponse = require('../helper/errorResponse');
 const Category_p = require('../models/Category_p');
-const Sequelize = require('sequelize');
-const Op = Sequelize.Op;
 
 //Ce controller permet de d'afficher les sous-catégories à partir d'une catégorie, ainsi que des réaliser les opérations GET basiques sur les sous catégories
 
