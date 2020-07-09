@@ -7,8 +7,8 @@ const crypto = require('crypto');
 const Model = Sequelize.Model;
 class Utilisateur extends Model {
     //Instance level method =/= static
-    getSignedJwtToken(num) {
-        return jwt.sign({ idutilisateur: this.idutilisateur, num }, process.env.JWT_SECRET, {
+    getSignedJwtToken() {
+        return jwt.sign({ idutilisateur: this.idutilisateur }, process.env.JWT_SECRET, {
             expiresIn: process.env.JWT_EXPIRE
         });
     }
