@@ -47,8 +47,11 @@ exports.getTest = async (req, res, next) => {
 // @access      Private
 exports.createTest = async (req, res, next) => {
     try {
-        const test = await Test.create(req.body);
-        console.log(test);
+        const test = await Test.create({
+            valeur: req.body.valeur,
+            numEleveur: req.elevage.numEleveur,
+            nomEvaluation: req.body.nomEvaluation
+        });
         return res.status(201).json({ success: true, data: test });
     } catch (err) {
         next(err);
