@@ -1,8 +1,6 @@
 const moment = require('moment');
 const DB = require('../config/db');
 const Sequelize = require('sequelize');
-const Elevage = require('../models/Elevage');
-const ErrorResponse = require('../helper/errorResponse');
 
 //Ce controller permet de définir les opérations propres au calcul des notes (globales ou utilisateur) à partir des valeurs de tests
 //FORMAT BD : 2020-01-17 00:00:00
