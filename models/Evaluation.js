@@ -9,6 +9,13 @@ const Evaluation = DB.define('evaluation', {
         allowNull: false,
         primaryKey: true
     },
+    priorite: {
+        type: Sequelize.INTEGER(2),
+        allowNull: false,
+        validate: {
+            isInt: true
+        }
+    },
     description: {
         type: Sequelize.STRING(200)
     },
