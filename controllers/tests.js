@@ -2,8 +2,6 @@ const Test = require('../models/Test');
 const ErrorResponse = require('../helper/errorResponse');
 const moment = require('moment');
 
-//Here we have all operations that are associated with the bootcamps routes
-
 
 // @desc        Get all tests
 // @route       /api/v1/tests
