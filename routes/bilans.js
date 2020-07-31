@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getNotesCategories, getNotesCategoriesIndividuelles, getNotesSousCategories, getNotesSousCategoriesIndividuelles, getNotesEvaluations, getNotesEvaluationsIndividuelles } = require('../controllers/bilans');
+const { getNotesCategories, getNotesCategoriesIndividuelles, getNotesSousCategories, getNotesSousCategoriesIndividuelles, getNotesEvaluations, getNotesEvaluationsIndividuelles, getAllNotes } = require('../controllers/bilans');
 const { protect } = require('../middlewares/auth');
 
 
@@ -12,6 +12,8 @@ router.route('/sous-categories/elevage').get(protect, getNotesSousCategoriesIndi
 
 router.route('/evaluations').get(protect, getNotesEvaluations);
 router.route('/evaluations/elevage').get(protect, getNotesEvaluationsIndividuelles);
+
+router.route('/evaluations/all').get(protect, getAllNotes);
 
 
 module.exports = router;
