@@ -16,6 +16,13 @@ const Evaluation = DB.define('evaluation', {
             isInt: true
         }
     },
+    idLiaison: {
+        type: Sequelize.INTEGER(2),
+        allowNull: false,
+        validate: {
+            isInt: true
+        }
+    },
     description: {
         type: Sequelize.STRING(200)
     },
