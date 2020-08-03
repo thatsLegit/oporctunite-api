@@ -44,11 +44,9 @@ exports.getTest = async (req, res, next) => {
 // @route       /api/v1/tests
 // @access      Private
 exports.createTest = async (req, res, next) => {
-    const dateT = req.body.dateT ? req.body.dateT : null;
     try {
         const test = await Test.create({
             valeur: req.body.valeur,
-            dateT,
             numEleveur: req.elevage.numEleveur,
             nomEvaluation: req.body.nomEvaluation
         });
