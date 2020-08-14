@@ -72,7 +72,7 @@ exports.getNotesCategoriesIndividuelles = async (req, res, next) => {
     try {
         const numEleveur = req.elevage.numEleveur;
 
-        const result = await DB.query("SELECT AVG(T.valeur) AS moyenneG, GC.nomCategorieG FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur=:numEleveur AND T.dateT IN (SELECT MAX(T.dateT) FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur=:numEleveur GROUP BY T.nomEvaluation) GROUP BY GC.nomCategorieG", {
+        const result = await DB.query("SELECT AVG(T.valeur) AS moyenneG, GC.nomCategorieG FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur=:numEleveur AND T.idTest IN (SELECT MAX(T.idTest) FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur=:numEleveur GROUP BY T.nomEvaluation) GROUP BY GC.nomCategorieG", {
             replacements: { numEleveur },
             raw: true,
             type: Sequelize.QueryTypes.SELECT
@@ -223,85 +223,83 @@ exports.getNotesEvaluationsIndividuelles = async (req, res, next) => {
 // @access      Private
 
 /*
-SELECT T.idTest, T.nomEvaluation, AVG(T.valeur) AS moyenneGlobaleEval, bilanIndividuelle.noteEval, T.dateT AS dateGlobale, sousCategGlobale.nomCategorieP AS nomSousCateg, sousCategGlobale.moyenneP AS moyenneGlobaleSousCateg, bilanIndividuelle.moyenneSousCateg, categGlobale.nomCategorieG AS nomCateg, categGlobale.moyenneG AS moyenneGlobaleCateg, bilanIndividuelle.moyenneCateg
+SELECT T.idTest, T.nomEvaluation, evalGlobale.moyenneGlobaleEval, bilanIndividuelle.noteEval, T.dateT AS dateTest, sousCategGlobale.nomCategorieP AS nomSousCateg, sousCategGlobale.moyenneP AS moyenneGlobaleSousCateg, bilanIndividuelle.moyenneSousCateg, categGlobale.nomCategorieG AS nomCateg, categGlobale.moyenneG AS moyenneGlobaleCateg, bilanIndividuelle.moyenneCateg 
 FROM evaluation L 
-INNER JOIN test T 
-	ON T.nomEvaluation = L.nomEvaluation 
-INNER JOIN elevage E 
-	ON E.numEleveur = T.numEleveur 
-INNER JOIN (SELECT AVG(T.valeur) AS moyenneP, PC.nomCategorieP, PC.nomCategorieG FROM categorie_p PC INNER JOIN evaluation E ON E.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = E.nomEvaluation WHERE T.dateT >= '2020-01-17 00:00:00' GROUP BY PC.nomCategorieP) sousCategGlobale
-	ON sousCategGlobale.nomCategorieP = L.nomCategorieP
-INNER JOIN (SELECT AVG(T.valeur) AS moyenneG, GC.nomCategorieG FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation E ON E.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = E.nomEvaluation WHERE T.dateT >= '2020-01-17 00:00:00' GROUP BY GC.nomCategorieG) categGlobale
-	ON categGlobale.nomCategorieG = sousCategGlobale.nomCategorieG
-LEFT JOIN (SELECT T.idTest, T.nomEvaluation, T.valeur AS noteEval, T.dateT, sousCateg.nomCategorieP AS nomSousCateg, sousCateg.moyenneP AS moyenneSousCateg,  categ.nomCategorieG AS nomCateg, categ.moyenneG AS moyenneCateg 
-FROM (
+INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation 
+INNER JOIN elevage E ON E.numEleveur = T.numEleveur 
+INNER JOIN (
+    SELECT AVG(T.valeur) AS moyenneGlobaleEval, L.nomEvaluation 
+    FROM evaluation L 
+    INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation 
+    INNER JOIN elevage E ON E.numEleveur = T.numEleveur 
+    WHERE T.dateT >= '2020-01-17 00:00:00' 
+    GROUP BY T.nomEvaluation 
+    ORDER BY T.dateT DESC) AS evalGlobale ON T.nomEvaluation = evalGlobale.nomEvaluation 
+INNER JOIN (
     SELECT AVG(T.valeur) AS moyenneP, PC.nomCategorieP, PC.nomCategorieG 
     FROM categorie_p PC 
-    INNER JOIN evaluation L 
-    	ON L.nomCategorieP = PC.nomCategorieP 
-    INNER JOIN test T 
-    	ON T.nomEvaluation = L.nomEvaluation 
-    INNER JOIN elevage E 
-    	ON E.numEleveur = T.numEleveur 
-    WHERE E.numEleveur= "FR00000" AND T.dateT IN (
-        SELECT MAX(T.dateT) 
-        FROM categorie_g GC 
-        INNER JOIN categorie_p PC 
-        	ON GC.nomCategorieG = PC.nomCategorieG 
-        INNER JOIN evaluation L 
-        	ON L.nomCategorieP = PC.nomCategorieP 
-        INNER JOIN test T 
-        	ON T.nomEvaluation = L.nomEvaluation 
-        INNER JOIN elevage E 
-        	ON E.numEleveur = T.numEleveur 
-        WHERE E.numEleveur= "FR00000" 
-        GROUP BY T.nomEvaluation) 
-    GROUP BY PC.nomCategorieP) AS sousCateg 
-	INNER JOIN evaluation EL 
-           ON EL.nomCategorieP = sousCateg.nomCategorieP
+    INNER JOIN evaluation E ON E.nomCategorieP = PC.nomCategorieP 
+    INNER JOIN test T ON T.nomEvaluation = E.nomEvaluation 
+    WHERE T.dateT >= '2020-01-17 00:00:00'
+    GROUP BY PC.nomCategorieP) sousCategGlobale ON sousCategGlobale.nomCategorieP = L.nomCategorieP 
 INNER JOIN (
     SELECT AVG(T.valeur) AS moyenneG, GC.nomCategorieG 
     FROM categorie_g GC 
-    INNER JOIN categorie_p PC 
-    	ON GC.nomCategorieG = PC.nomCategorieG 
-    INNER JOIN evaluation L 
-    	ON L.nomCategorieP = PC.nomCategorieP 
-    INNER JOIN test T 
-    	ON T.nomEvaluation = L.nomEvaluation 
-    INNER JOIN elevage E 
-    	ON E.numEleveur = T.numEleveur 
-    WHERE E.numEleveur="FR00000" AND T.dateT IN (
-        SELECT MAX(T.dateT) 
-        FROM categorie_g GC 
-        INNER JOIN categorie_p PC 
-        	ON GC.nomCategorieG = PC.nomCategorieG 
-        INNER JOIN evaluation L 
-        	ON L.nomCategorieP = PC.nomCategorieP 
-        INNER JOIN test T 
-        	ON T.nomEvaluation = L.nomEvaluation 
-        INNER JOIN elevage E 
-        	ON E.numEleveur = T.numEleveur 
-        WHERE E.numEleveur="FR00000" 
-        GROUP BY T.nomEvaluation) 
-    GROUP BY GC.nomCategorieG) AS categ 
-		ON categ.nomCategorieG = sousCateg.nomCategorieG
-	INNER JOIN test T 
-		ON T.nomEvaluation = EL.nomEvaluation 
-    INNER JOIN elevage E 
-    	ON E.numEleveur = T.numEleveur 
+    INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG 
+    INNER JOIN evaluation E ON E.nomCategorieP = PC.nomCategorieP 
+    INNER JOIN test T ON T.nomEvaluation = E.nomEvaluation 
+    WHERE T.dateT >= '2020-01-17 00:00:00' 
+    GROUP BY GC.nomCategorieG) categGlobale ON categGlobale.nomCategorieG = sousCategGlobale.nomCategorieG 
+LEFT JOIN (
+    SELECT T.idTest, T.nomEvaluation, T.valeur AS noteEval, T.dateT, sousCateg.nomCategorieP AS nomSousCateg, sousCateg.moyenneP AS moyenneSousCateg,  categ.nomCategorieG AS nomCateg, categ.moyenneG AS moyenneCateg 
+    FROM ( 
+        SELECT AVG(T.valeur) AS moyenneP, PC.nomCategorieP, PC.nomCategorieG, T.dateT
+        FROM categorie_p PC 
+        INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP 
+        INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation 
+        INNER JOIN elevage E ON E.numEleveur = T.numEleveur
+        WHERE E.numEleveur= "FR00000" AND T.idTest IN (
+            SELECT MAX(T.idTest) AS testF
+            FROM categorie_g GC 
+            INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG 
+            INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP 
+            INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation 
+            INNER JOIN elevage E ON E.numEleveur = T.numEleveur 
+            WHERE E.numEleveur= "FR00000" 
+            GROUP BY T.nomEvaluation
+        	) 
+        GROUP BY PC.nomCategorieP) AS sousCateg 
+    	INNER JOIN evaluation EL ON EL.nomCategorieP = sousCateg.nomCategorieP 
+        INNER JOIN (
+            SELECT AVG(T.valeur) AS moyenneG, GC.nomCategorieG 
+            FROM categorie_g GC 
+            INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG 
+            INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP 
+            INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation 
+            INNER JOIN elevage E ON E.numEleveur = T.numEleveur 
+            WHERE E.numEleveur="FR00000" AND T.idTest IN (
+                SELECT MAX(T.idTest) FROM categorie_g GC 
+                INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG 
+                INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP 
+                INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation 
+                INNER JOIN elevage E ON E.numEleveur = T.numEleveur 
+                WHERE E.numEleveur="FR00000" GROUP BY T.nomEvaluation) 
+            GROUP BY GC.nomCategorieG) AS categ ON categ.nomCategorieG = sousCateg.nomCategorieG 
+    INNER JOIN test T ON T.nomEvaluation = EL.nomEvaluation 
+    INNER JOIN elevage E ON E.numEleveur = T.numEleveur 
     WHERE E.numEleveur= "FR00000" 
-    GROUP BY T.idTest) bilanIndividuelle
-	ON bilanIndividuelle.idTest = T.idTest
-WHERE T.dateT >= '2020-01-17 00:00:00' 
-GROUP BY T.idTest 
-ORDER BY T.dateT DESC */
+    GROUP BY T.idTest) bilanIndividuelle ON bilanIndividuelle.idTest = T.idTest 
+ WHERE T.dateT >= '2020-01-17 00:00:00' 
+ GROUP BY T.idTest 
+ ORDER BY T.dateT DESC
+*/
 
 exports.getAllNotes = async (req, res, next) => {
     try {
         const numEleveur = req.elevage.numEleveur;
         const date6monthsAgo = moment(new Date(Date.now())).subtract(6, 'months').format('YYYY-MM-Do HH:mm:ss');
 
-        const result = await DB.query("SELECT T.idTest, T.nomEvaluation, evalGlobale.moyenneGlobaleEval, bilanIndividuelle.noteEval, T.dateT AS dateTest, sousCategGlobale.nomCategorieP AS nomSousCateg, sousCategGlobale.moyenneP AS moyenneGlobaleSousCateg, bilanIndividuelle.moyenneSousCateg, categGlobale.nomCategorieG AS nomCateg, categGlobale.moyenneG AS moyenneGlobaleCateg, bilanIndividuelle.moyenneCateg FROM evaluation L INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur INNER JOIN (SELECT AVG(T.valeur) AS moyenneGlobaleEval, L.nomEvaluation FROM evaluation L INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE T.dateT >= :date GROUP BY T.nomEvaluation ORDER BY T.dateT DESC) AS evalGlobale ON T.nomEvaluation = evalGlobale.nomEvaluation INNER JOIN (SELECT AVG(T.valeur) AS moyenneP, PC.nomCategorieP, PC.nomCategorieG FROM categorie_p PC INNER JOIN evaluation E ON E.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = E.nomEvaluation WHERE T.dateT >= :date GROUP BY PC.nomCategorieP) sousCategGlobale ON sousCategGlobale.nomCategorieP = L.nomCategorieP INNER JOIN (SELECT AVG(T.valeur) AS moyenneG, GC.nomCategorieG FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation E ON E.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = E.nomEvaluation WHERE T.dateT >= :date GROUP BY GC.nomCategorieG) categGlobale ON categGlobale.nomCategorieG = sousCategGlobale.nomCategorieG LEFT JOIN (SELECT T.idTest, T.nomEvaluation, T.valeur AS noteEval, T.dateT, sousCateg.nomCategorieP AS nomSousCateg, sousCateg.moyenneP AS moyenneSousCateg,  categ.nomCategorieG AS nomCateg, categ.moyenneG AS moyenneCateg FROM ( SELECT AVG(T.valeur) AS moyenneP, PC.nomCategorieP, PC.nomCategorieG FROM categorie_p PC INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur= :numEleveur AND T.dateT IN (SELECT MAX(T.dateT) FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur= :numEleveur GROUP BY T.nomEvaluation) GROUP BY PC.nomCategorieP) AS sousCateg INNER JOIN evaluation EL ON EL.nomCategorieP = sousCateg.nomCategorieP INNER JOIN (SELECT AVG(T.valeur) AS moyenneG, GC.nomCategorieG FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur=:numEleveur AND T.dateT IN (SELECT MAX(T.dateT) FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur=:numEleveur GROUP BY T.nomEvaluation) GROUP BY GC.nomCategorieG) AS categ ON categ.nomCategorieG = sousCateg.nomCategorieG INNER JOIN test T ON T.nomEvaluation = EL.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur= :numEleveur GROUP BY T.idTest) bilanIndividuelle ON bilanIndividuelle.idTest = T.idTest WHERE T.dateT >= :date GROUP BY T.idTest ORDER BY T.dateT DESC", {
+        const result = await DB.query("SELECT T.idTest, T.nomEvaluation, evalGlobale.moyenneGlobaleEval, bilanIndividuelle.noteEval, T.dateT AS dateTest, sousCategGlobale.nomCategorieP AS nomSousCateg, sousCategGlobale.moyenneP AS moyenneGlobaleSousCateg, bilanIndividuelle.moyenneSousCateg, categGlobale.nomCategorieG AS nomCateg, categGlobale.moyenneG AS moyenneGlobaleCateg, bilanIndividuelle.moyenneCateg FROM evaluation L INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur INNER JOIN (SELECT AVG(T.valeur) AS moyenneGlobaleEval, L.nomEvaluation FROM evaluation L INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE T.dateT >= :date GROUP BY T.nomEvaluation ORDER BY T.dateT DESC) AS evalGlobale ON T.nomEvaluation = evalGlobale.nomEvaluation INNER JOIN (SELECT AVG(T.valeur) AS moyenneP, PC.nomCategorieP, PC.nomCategorieG FROM categorie_p PC INNER JOIN evaluation E ON E.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = E.nomEvaluation WHERE T.dateT >= :date GROUP BY PC.nomCategorieP) sousCategGlobale ON sousCategGlobale.nomCategorieP = L.nomCategorieP INNER JOIN (SELECT AVG(T.valeur) AS moyenneG, GC.nomCategorieG FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation E ON E.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = E.nomEvaluation WHERE T.dateT >= :date GROUP BY GC.nomCategorieG) categGlobale ON categGlobale.nomCategorieG = sousCategGlobale.nomCategorieG LEFT JOIN (SELECT T.idTest, T.nomEvaluation, T.valeur AS noteEval, T.dateT, sousCateg.nomCategorieP AS nomSousCateg, sousCateg.moyenneP AS moyenneSousCateg,  categ.nomCategorieG AS nomCateg, categ.moyenneG AS moyenneCateg FROM ( SELECT AVG(T.valeur) AS moyenneP, PC.nomCategorieP, PC.nomCategorieG FROM categorie_p PC INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur= :numEleveur AND T.idTest IN (SELECT MAX(T.idTest) FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur= :numEleveur GROUP BY T.nomEvaluation) GROUP BY PC.nomCategorieP) AS sousCateg INNER JOIN evaluation EL ON EL.nomCategorieP = sousCateg.nomCategorieP INNER JOIN (SELECT AVG(T.valeur) AS moyenneG, GC.nomCategorieG FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur=:numEleveur AND T.idTest IN (SELECT MAX(T.idTest) FROM categorie_g GC INNER JOIN categorie_p PC ON GC.nomCategorieG = PC.nomCategorieG INNER JOIN evaluation L ON L.nomCategorieP = PC.nomCategorieP INNER JOIN test T ON T.nomEvaluation = L.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur=:numEleveur GROUP BY T.nomEvaluation) GROUP BY GC.nomCategorieG) AS categ ON categ.nomCategorieG = sousCateg.nomCategorieG INNER JOIN test T ON T.nomEvaluation = EL.nomEvaluation INNER JOIN elevage E ON E.numEleveur = T.numEleveur WHERE E.numEleveur= :numEleveur GROUP BY T.idTest) bilanIndividuelle ON bilanIndividuelle.idTest = T.idTest WHERE T.dateT >= :date GROUP BY T.idTest ORDER BY T.dateT DESC", {
             replacements: { date: date6monthsAgo, numEleveur },
             raw: true,
             type: Sequelize.QueryTypes.SELECT
