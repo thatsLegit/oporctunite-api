@@ -33,6 +33,7 @@ const sousCategories = require('./routes/sousCategories');
 const categories = require('./routes/categories');
 const auth = require('./routes/auth');
 const liaisons = require('./routes/liaisons');
+const fiches = require('./routes/fiches');
 
 //Initialize express
 const app = express();
@@ -46,7 +47,7 @@ if (process.env.NODE_ENV === "development") {
     app.use(morgan('dev'));
 }
 
-//Set static folder (accessible in the url through localhost:port/uploads/...)
+//Set static folder (accessible in the url through localhost:port/img/...)
 app.use(express.static(path.join(__dirname, 'public')));
 
 //Mount routers
@@ -57,6 +58,7 @@ app.use('/api/v1/sousCategories', sousCategories);
 app.use('/api/v1/categories', categories);
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/liaisons', liaisons);
+app.use('/api/v1/fiches', fiches);
 
 //Error handling middleware
 app.use(errorHandler);
