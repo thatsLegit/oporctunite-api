@@ -34,6 +34,7 @@ const categories = require('./routes/categories');
 const auth = require('./routes/auth');
 const liaisons = require('./routes/liaisons');
 const fiches = require('./routes/fiches');
+const favoris = require('./routes/favoris');
 
 //Initialize express
 const app = express();
@@ -59,6 +60,7 @@ app.use('/api/v1/categories', categories);
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/liaisons', liaisons);
 app.use('/api/v1/fiches', fiches);
+app.use('/api/v1/favoris', favoris);
 
 //Error handling middleware
 app.use(errorHandler);
