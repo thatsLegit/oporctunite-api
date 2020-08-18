@@ -34,7 +34,7 @@ exports.getAllFavoris = async (req, res, next) => {
 // @access      Private
 exports.getFavoris = async (req, res, next) => {
     try {
-        const titre = req.params.titreFiche;
+        const titre = req.params.titreFiche.replace('+', ' ');
         const id = req.utilisateur.idutilisateur;
         const favoris = await Favoris.findOne({
             where: {
@@ -77,7 +77,7 @@ exports.createFavoris = async (req, res, next) => {
 
 exports.deleteFavoris = async (req, res, next) => {
     try {
-        const titre = req.params.titreFiche;
+        const titre = req.params.titreFiche.replace('+', ' ');
         const id = req.utilisateur.idutilisateur;
         const favoris = await Favoris.findOne({
             where: {
