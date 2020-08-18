@@ -77,7 +77,7 @@ exports.createFavoris = async (req, res, next) => {
 
 exports.deleteFavoris = async (req, res, next) => {
     try {
-        const titre = req.params.titreFiche.replace('+', ' ');
+        const titre = req.params.titreFiche.replace(/\+/g, ' ');
         const id = req.utilisateur.idutilisateur;
         const favoris = await Favoris.findOne({
             where: {
