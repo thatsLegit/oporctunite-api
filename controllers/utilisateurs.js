@@ -1,8 +1,10 @@
 const ErrorResponse = require('../helper/errorResponse');
 const Utilisateur = require('../models/Utilisateur');
+const Elevage = require('../models/Elevage');
 const path = require('path');
 
 
+//Non testé!
 // @desc        Upload photo after subscription
 // @route       PUT /api/v1/utilisateurs/photos/:id
 // @access      Private
@@ -46,3 +48,25 @@ exports.utilisateurPhotoUpload = async (req, res, next) => {
         });
     });
 };
+
+// @desc        update user data
+// @route       PUT /api/v1/utilisateurs/userData
+// @access      Private
+exports.updateUserData = async (req, res, next) => {
+    const utilisateur = await Utilisateur.findByPk(req.utilisateur.idutilisateur);
+    const elevage = await Elevage.findByPk(req.elevage.numEleveur);
+
+    await utilisateur.update({
+        adresse: req.body.adresse,
+        codePostal: parseInt(req.body.codePostal),
+        email: req.body.email,
+        telephone: parseInt(req.body.telephone),
+        ville: req.body.ville
+    });
+    await elevage.update({
+        nomElevage: req.body.nomElevage,
+        tailleElevage: parseInt(req.body.tailleElevage)
+    });
+
+    return res.status(200).json({ success: true });
+}

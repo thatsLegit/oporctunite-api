@@ -55,7 +55,7 @@ Utilisateur.init({
         type: Sequelize.INTEGER(5),
         allowNull: false,
         validate: {
-            iisInt: true
+            isInt: true
         }
     },
     adresse: {
