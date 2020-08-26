@@ -1,39 +1,65 @@
-Installation 
+API utilisant les technologies Node, Express, Sequelize (ORM pour Mysql notamment).
 
-Requis : Node, yarn, npm
+*https://expressjs.com/en/api.html*
+*https://sequelize.org/v5/*
 
-Préalable
+## Pré-requis
 
-MacOS
+# MacOS
 
 Installer yarn avec Brew package manager :
+
+```
 brew yarn install
+```
 
 Ou télécharger directement via le terminal :
+
+```
 curl -o- -L https://yarnpkg.com/install.sh | bash
+```
 
-Ou npm install yarn
-
-Windows
+# Windows
 
 Avec Chocolatey :
 
+```
 choco install yarn
+```
+
+Notez que l'utilisation de yarn est un choix, mais il est possible de switcher vers npm.
 
 
-Une fois le projet cloné et Node, yarn, npm installé, aller dans le dossier du projet.
+# Mysql
 
-Faire yarn install
+Le serveur tente de se connecter à une bd mysql au lancement, donc assurez-vous d'avoir un serveur Mysql en route
+avant le lancement. 
+La bd n'est pas généré automatiquement au lancement. 
+Pour développer en local, il est conseillé d'importer le script de la bd directement depuis la bd Mysql de l'ENVT avec PhpMyAdmin.
 
-Ensuite, 2 scripts sont définis dans package.json :
 
-Pour lancer le serveur en mode développement (permettant le fast-refresh après un ctrl+s notamment...) :
-npm run dev
 
-Pour lancer le serveur en mode production, 
-npm start
+## Installation des dépendances
 
-Au lancement, le serveur tente de se connecter à la bd mysql dont les username:login doient être spécifiés dans config.js
+```
+yarn install
+```
+
+## Lancer le serveur
+
+2 scripts différents, définis dans package.json. 
+Le mode dev est conseillé en developpement, permet notamment le fast refresh avec nodemon
+
+```
+# development mode
+yarn run dev
+
+# production mode
+yarn start
+```
+
+## API documentation
+https://oporctunite.envt.fr/oporctunite-api
 
 
 
