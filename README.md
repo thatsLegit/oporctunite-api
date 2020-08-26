@@ -1,6 +1,6 @@
 API utilisant les technologies Node, Express, Sequelize (ORM pour Mysql notamment).
 
-*https://expressjs.com/en/api.html*
+*https://expressjs.com/en/api.html* <br>
 *https://sequelize.org/v5/*
 
 ## Pré-requis
