@@ -8,7 +8,6 @@ const helmet = require('helmet');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const rateLimit = require('express-rate-limit');
-const mongoSanitize = require('express-mongo-sanitize');
 const errorHandler = require('./middlewares/error');
 const { momentFr } = require('./helper/momentFr');
 //Ne pas oublier d'inclure https, certificat ssl à la fin
@@ -75,9 +74,6 @@ app.use('/api/v1/utilisateurs', utilisateurs);
 
 //Error handling middleware
 app.use(errorHandler);
-
-//Sanitize data
-app.use(mongoSanitize());
 
 //Set security headers
 app.use(helmet());
