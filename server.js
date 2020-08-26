@@ -4,6 +4,11 @@ const dotenv = require('dotenv');
 const morgan = require('morgan'); //morgan: logger middleware
 const colors = require('colors');
 const fileupload = require('express-fileupload');
+const helmet = require('helmet');
+const xss = require('xss-clean');
+const hpp = require('hpp');
+const rateLimit = require('express-rate-limit');
+const mongoSanitize = require('express-mongo-sanitize');
 const errorHandler = require('./middlewares/error');
 const { momentFr } = require('./helper/momentFr');
 //Ne pas oublier d'inclure https, certificat ssl à la fin
@@ -70,6 +75,26 @@ app.use('/api/v1/utilisateurs', utilisateurs);
 
 //Error handling middleware
 app.use(errorHandler);
+
+//Sanitize data
+app.use(mongoSanitize());
+
+//Set security headers
+app.use(helmet());
+
+//Prevent cross-site scripting
+app.use(xss());
+
+//Rate limiting
+const limiter = rateLimit({
+    windowMs: 10 * 1000 * 60, //10 minutes
+    max: 100
+});
+app.use(limiter);
+
+//Prevent http param pollution
+app.use(hpp());
+
 
 //Start the server
 const PORT = process.env.PORT || 5000;
