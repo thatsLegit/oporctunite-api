@@ -23,7 +23,9 @@ choco install yarn
 
 Une fois le projet cloné et Node, yarn, npm installé, aller dans le dossier du projet.
 
-2 scripts sont définis dans package.json :
+Faire yarn install
+
+Ensuite, 2 scripts sont définis dans package.json :
 
 Pour lancer le serveur en mode développement (permettant le fast-refresh après un ctrl+s notamment...) :
 npm run dev
