@@ -10,7 +10,7 @@ API utilisant les technologies Node, Express, Sequelize (ORM pour Mysql notammen
 Installer yarn avec Brew package manager :
 
 ```
-brew yarn install
+brew install yarn
 ```
 
 Ou télécharger directement via le terminal :
