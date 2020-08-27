@@ -62,7 +62,10 @@ yarn start
 
 
 # API documentation
-https://oporctunite.envt.fr/oporctunite-api
+*https://oporctunite.envt.fr/oporctunite-api*
+
+# Nginx/pm2 documentation
+*https://oporctunite.envt.fr/oporctunite-api/img/serveur_nginx_envt.pdf*
 
 
 
